@@ -27,9 +27,10 @@ class Bag:
 		self.items.update({name: toy})
 		self.serialize()
 		print(self.items)
-	def remove_toy_items(self,name):
+	def remove_toy_items(self, name):
 		del self.items[name]
 		self.serialize()
+		print(self.items)
 
 	def serialize(self):
 		with open('lootbag.txt', "wb+") as lootbag:
@@ -55,6 +56,9 @@ if __name__ == "__main__":
 
 	if arguments[0] == "ls":
 	   print(bag.items)
+
+	if arguments[0] == "remove":
+		bag.remove_toy_items(arguments[1])
 
 	# bag.add_name("Suzy")
 	# bag.add_name("Kyle")
