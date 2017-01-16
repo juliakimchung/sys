@@ -11,23 +11,32 @@ class Bag:
 		self.deserialize()
 
 
-	def add_name(self, new_name):
-		self.name.add(new_name)
+	# def add_name(self, new_name):
+	# 	self.name.add(new_name)
 
-	def add_toy(self, new_toy):
-		self.toy.add(new_toy)
+	# def add_toy(self, new_toy):
+	# 	self.toy.add(new_toy)
 
-	def remove_name(self, name_to_remove):
-		self.name.remove(name_to_remove)
+	# def remove_name(self, name_to_remove):
+	# 	self.name.remove(name_to_remove)
 
-	def remove_toy(self, toy_to_remove):
-		self.toy.remove(toy_to_remove)
+	# def remove_toy(self, toy_to_remove):
+	# 	self.toy.remove(toy_to_remove)
 
 	def add_toy_items_to_child(self, name, toy):
-		self.items.update({name: toy})
+		try:
+			self.items[name].append(toy)
+		except KeyError:
+			self.items[name] =[]
+			self.items[name].append(toy)
 		self.serialize()
 		print(self.items)
-	def remove_toy_items(self, name):
+	def remove_toy_items(self,name, toy):
+		self.items[name].remove(toy)
+		self.serialize()
+		print(self.items)
+
+	def remove_child_toy(self,name):
 		del self.items[name]
 		self.serialize()
 		print(self.items)
@@ -58,7 +67,17 @@ if __name__ == "__main__":
 	   print(bag.items)
 
 	if arguments[0] == "remove":
-		bag.remove_toy_items(arguments[1])
+		bag.remove_toy_items(arguments[1], arguments[2])
+
+	if arguments[0] == "delete":
+		bag.remove_child_toy(arguments[1])
+
+	if arguments[0] == "Madison":
+		print(bag.items['Madison'])
+
+	if arguments[0] == "append":
+		bag.add_toy_items_to_child(arguments[1], arguments[2])
+
 
 	# bag.add_name("Suzy")
 	# bag.add_name("Kyle")
