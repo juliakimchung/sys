@@ -1,55 +1,95 @@
 import sys
-import pickle
-
+import sqlite3
 
 
 class Bag:
 	def __init__(self):
-		self.name = set()
-		self.toy = set()
-		# self.items = dict()
-		self.deserialize()
+		pass
 
 
-	# def add_name(self, new_name):
-	# 	self.name.add(new_name)
+	def add_toy_items_to_child(self, child, toy):
 
-	# def add_toy(self, new_toy):
-	# 	self.toy.add(new_toy)
+		with sqlite3.connect('lootbag.db') as conn:
+			c = conn.cursor()
 
-	# def remove_name(self, name_to_remove):
-	# 	self.name.remove(name_to_remove)
+			try:
+				c.execute("INSERT INTO Child VALUES (?,?,?)",
+					(None, child, 0))
+			except sqlite3.OperationalError:
+				pass
 
-	# def remove_toy(self, toy_to_remove):
-	# 	self.toy.remove(toy_to_remove)
+			c.execute("SELECT c.ChildId, c.Name FROM Child c WHERE Name='{}'".format (child))
+			# print(c.fetchall())
+			# 
+			results = c.fetchall()
+			print(results)
 
-	def add_toy_items_to_child(self, name, toy):
-		try:
-			self.items[name].append(toy)
-		except KeyError:
-			self.items[name] =[]
-			self.items[name].append(toy)
-		self.serialize()
-		print(self.items)
-	def remove_toy_items(self,name, toy):
-		self.items[name].remove(toy)
-		self.serialize()
-		print(self.items)
 
-	def remove_child_toy(self,name):
-		del self.items[name]
-		self.serialize()
-		print(self.items)
+			try:
+				c.execute("INSERT INTO Toy Values(?,?,?)", (None, toy, results[0][0]))
+			except sqlite3.OperationalError:
+				pass
 
-	def serialize(self):
-		with open('lootbag.txt', "wb+") as lootbag:
-			pickle.dump(self.items, lootbag)
-		"""save files"""
-	def deserialize(self):
-		"""to open files"""
-		with open('lootbag.txt', "rb+") as lootbag:
-			self.items = pickle.load(lootbag)
+			
+
+	def get_by_child(self, child):
 		
+		with sqlite3.connect('lootbag.db') as conn:
+			c = conn.cursor()
+
+			c.execute("SELECT t.Name FROM Toy t, Child c WHERE c.Name='{}' AND c.ChildId = t.ChildId"
+				.format(child))
+			# print(c.fetchall())
+			# 
+			toys = c.fetchall()
+			print(toys)
+
+	def remove_toy_items(self,child, toy):
+		with sqlite3.connect('lootbag.db') as conn:
+			c = conn.cursor()
+			c.execute("SELECT ChildId FROM Child WHERE Name='{}'".format (child))
+			# print(c.fetchall())
+			# 
+			results = c.fetchall()
+
+			try:
+				c.execute("DELETE FROM Toy Where ChildId ={} AND Name='{}'".format(results[0][0],toy) )
+			except sqlite3.OperationalError:
+				pass
+
+		
+	def remove_child_toy(self, child):
+
+		with sqlite3.connect('lootbag.db') as conn:
+			c = conn.cursor()
+			c.execute("SELECT ChildId FROM Child WHERE Name = '{}'".format(child))
+			results = c.fetchall()
+			print(results)
+
+			try:
+				c.execute("DELETE FROM Child WHERE ChildId = {} ".format(results[0][0]))
+			except sqlite3.OperationalError:
+
+				pass
+
+	def get_list_of_kids(self):
+		with sqlite3.connect('lootbag.db') as conn:
+			c = conn.cursor()
+			c.execute("SELECT c.Name FROM Child c")
+			results = c.fetchall()
+			print(results)
+		# return [name for name in self.items.keys()]
+		pass
+
+	def is_child_happy(self):
+		with sqlite3.connect('lootbag.db') as conn:
+			c = conn.cursor()
+			c.execute("SELECT ChildId FROM Child c, Toy t WHERE c.ChildId = t.ChildId")
+			results = c.fetchall()
+
+			try:
+				c.execute("UPDATE c.Happy SET Happy = 1 WHERE c.ChildId = t.ChildId ")
+	
 
 if __name__ == "__main__":
 	
@@ -64,7 +104,7 @@ if __name__ == "__main__":
 		bag.add_toy_items_to_child(arguments[1],arguments[2])
 
 	if arguments[0] == "ls":
-	   print(bag.items)
+	   bag.get_list_of_kids()
 
 	if arguments[0] == "remove":
 		bag.remove_toy_items(arguments[1], arguments[2])
@@ -72,32 +112,11 @@ if __name__ == "__main__":
 	if arguments[0] == "delete":
 		bag.remove_child_toy(arguments[1])
 
-	if arguments[0] == "Madison":
-		print(bag.items['Madison'])
+	if arguments[0] == "toys":
+		bag.get_by_child(arguments[1])
 
 	if arguments[0] == "append":
 		bag.add_toy_items_to_child(arguments[1], arguments[2])
 
 
-	# bag.add_name("Suzy")
-	# bag.add_name("Kyle")
-	# bag.add_name("Lily")
-	# bag.add_name("Phil")
-
-	# bag.add_toy("kite")
-	# bag.add_toy("car")
-	# bag.add_toy("kitchen")
-	# bag.add_toy("paint")
-
-	# bag.add_toy_items_to_child("Madison", "books")
-	# bag.add_toy_items_to_child("Ava", "stickers")
-	# bag.add_toy_items_to_child("Olivia", "stickers")
-	# print(bag.items)
-
-	# # Bag.remove_toy_items(("Ava", "stickers"))
-	# # print(Bag.items)
-
-	# print(bag.remove_toy_items("Olivia"))
-	# print(bag.items)
-	# print(bag.name)
-	# print(bag.toy)
+	
