@@ -19,8 +19,7 @@ class Bag:
 				pass
 
 			c.execute("SELECT c.ChildId, c.Name FROM Child c WHERE Name='{}'".format (child))
-			# print(c.fetchall())
-			# 
+			
 			results = c.fetchall()
 			print(results)
 
@@ -39,8 +38,7 @@ class Bag:
 
 			c.execute("SELECT t.Name FROM Toy t, Child c WHERE c.Name='{}' AND c.ChildId = t.ChildId"
 				.format(child))
-			# print(c.fetchall())
-			# 
+			
 			toys = c.fetchall()
 			print(toys)
 
@@ -48,8 +46,7 @@ class Bag:
 		with sqlite3.connect('lootbag.db') as conn:
 			c = conn.cursor()
 			c.execute("SELECT ChildId FROM Child WHERE Name='{}'".format (child))
-			# print(c.fetchall())
-			# 
+			
 			results = c.fetchall()
 
 			try:
@@ -78,8 +75,7 @@ class Bag:
 			c.execute("SELECT c.Name FROM Child c")
 			results = c.fetchall()
 			print(results)
-		# return [name for name in self.items.keys()]
-		pass
+		
 
 	def is_child_happy(self, child):
 		with sqlite3.connect('lootbag.db') as conn:
@@ -111,7 +107,7 @@ if __name__ == "__main__":
 	arguments = sys.argv[1:]
 	
 	if arguments[0] == "add":
-		# print(bag.add_toy_items_to_child("Holly", "kitchen-set"))
+		
 		bag.add_toy_items_to_child(arguments[1],arguments[2])
 
 	if arguments[0] == "ls":
