@@ -32,7 +32,7 @@ class Bag:
 
 			
 
-	def get_by_child(self, child):
+	def toy_by_child(self, child):
 		
 		with sqlite3.connect('lootbag.db') as conn:
 			c = conn.cursor()
@@ -58,16 +58,16 @@ class Bag:
 				pass
 
 		
-	def remove_child_toy(self, child):
+	def remove_child_toy(self, childId):
 
 		with sqlite3.connect('lootbag.db') as conn:
 			c = conn.cursor()
-			c.execute("SELECT ChildId FROM Child WHERE Name = '{}'".format(child))
+			c.execute("SELECT ChildId FROM Child WHERE Name = '{}'".format(childId))
 			results = c.fetchall()
 			print(results)
 
 			try:
-				c.execute("DELETE FROM Child WHERE ChildId = {} ".format(results[0][0]))
+				c.execute("DELETE FROM Child WHERE ChildId = {} ".format(childId))
 			except sqlite3.OperationalError:
 
 				pass
@@ -93,6 +93,15 @@ class Bag:
 
 				pass
 
+	def get_list_of_toys(self):
+		with sqlite3.connect('lootbag.db')as conn:
+			c = conn.cursor()
+			c.execute("SELECT t.Name FROM Toy t")
+			results = c.fetchall()
+			print(results)
+
+
+
 if __name__ == "__main__":
 	
 	bag = Bag()
@@ -115,10 +124,13 @@ if __name__ == "__main__":
 		bag.remove_child_toy(arguments[1])
 
 	if arguments[0] == "toys":
-		bag.get_by_child(arguments[1])
+		bag.toy_by_child(arguments[1])
 
 	if arguments[0] == "happy":
 		bag.is_child_happy(arguments[1])
+
+	if arguments[0] == "list":
+		bag.get_list_of_toys()
 
 
 	
