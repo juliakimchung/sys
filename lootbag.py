@@ -81,15 +81,17 @@ class Bag:
 		# return [name for name in self.items.keys()]
 		pass
 
-	def is_child_happy(self):
+	def is_child_happy(self, child):
 		with sqlite3.connect('lootbag.db') as conn:
 			c = conn.cursor()
-			c.execute("SELECT ChildId FROM Child c, Toy t WHERE c.ChildId = t.ChildId")
+			c.execute("SELECT Happy FROM Child WHERE Name = '{}'".format(child))
 			results = c.fetchall()
 
 			try:
-				c.execute("UPDATE c.Happy SET Happy = 1 WHERE c.ChildId = t.ChildId ")
-	
+				c.execute("UPDATE Child SET Happy = 1 WHERE Name ='{}'".format(child))
+			except sqlite3.OperationalError:
+
+				pass
 
 if __name__ == "__main__":
 	
@@ -115,8 +117,8 @@ if __name__ == "__main__":
 	if arguments[0] == "toys":
 		bag.get_by_child(arguments[1])
 
-	if arguments[0] == "append":
-		bag.add_toy_items_to_child(arguments[1], arguments[2])
+	if arguments[0] == "happy":
+		bag.is_child_happy(arguments[1])
 
 
 	
